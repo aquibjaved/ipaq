@@ -61,7 +61,7 @@ class TextModel(tez.Model):
         return nn.BCEWithLogitsLoss()(outputs, targets.view(-1,1))
 
     def monitor_metrics(self, outputs, targets):
-        outputs = torch.simgoid(outputs, dim=1).cpu().detach().numpy().tolist()
+        outputs = torch.sigmoid(outputs).cpu().detach().numpy().tolist()
 
         output = []
         for h in outputs:
@@ -92,6 +92,7 @@ def train_model():
 
     df = pd.read_csv("data/text_data.csv")
     print(df.head(5))
+    df = df.sample(50)
     lab_dict = {'ham':0, 'spam':1}
     df["labels"] = df.Category.apply(lambda x:lab_dict[x])
     print(df)
@@ -106,8 +107,9 @@ def train_model():
 
     n_train_steps = int(len(train_df) / TRAIN_BS * EPOCHS)
     model = TextModel(num_classes=1, num_train_steps=n_train_steps)
-    model.fit(train_dataset, valid_dataset, device="cpu", epochs=10, n_jobs=1, train_bs=8)
+    model.fit(train_dataset, valid_dataset, device="cpu", epochs=1, n_jobs=1, train_bs=8)
 
+    model.save("test_model.bin")
 
 if __name__=="__main__":
     train_model()
