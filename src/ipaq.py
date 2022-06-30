@@ -63,6 +63,7 @@ class TextModel(tez.Model):
     def monitor_metrics(self, outputs, targets):
         outputs = torch.sigmoid(outputs).cpu().detach().numpy().tolist()
 
+        # TODO: add check binary
         output = []
         for h in outputs:
             tmp_arr =[]
@@ -89,13 +90,10 @@ class TextModel(tez.Model):
         return x, None, {}
 
 def train_model():
-
     df = pd.read_csv("data/text_data.csv")
-    print(df.head(5))
     df = df.sample(50)
     lab_dict = {'ham':0, 'spam':1}
     df["labels"] = df.Category.apply(lambda x:lab_dict[x])
-    print(df)
 
     train_df, test_df = train_test_split(df, test_size=0.20, random_state=42)
 
@@ -109,7 +107,7 @@ def train_model():
     model = TextModel(num_classes=1, num_train_steps=n_train_steps)
     model.fit(train_dataset, valid_dataset, device="cpu", epochs=1, n_jobs=1, train_bs=8)
 
-    model.save("test_model.bin")
+    model.save("model/test_model.bin")
 
 if __name__=="__main__":
     train_model()

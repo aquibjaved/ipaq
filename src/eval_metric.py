@@ -22,6 +22,3 @@ class EvalClass:
 
     def roc_auc():
         pass
-
-
-
